@@ -51,14 +51,12 @@ function createJSONObject(countryName, average, codeOfCountry) {
 rl.on('close', function () {
 
   for(var i = 0; i < csvObjArr.length; i++) {
-    var codeLength = code.size;
     count = 0;
     sum = 0;
-    //countryName = '';
     for(var j = 1; j < csvObjArr.length; j++) {
       if((csvObjArr[i].countryCode === csvObjArr[j].countryCode) && !(code.has(csvObjArr[j].countryCode))) {
         count++;
-        sum = sum + Number.parseFloat(csvObjArr[i].values) + Number.parseFloat(csvObjArr[j].values);
+        sum = sum + Number.parseFloat(csvObjArr[j].values);
         countryName = csvObjArr[j].countryName;
         codeOfCountry = csvObjArr[j].countryCode;
       }

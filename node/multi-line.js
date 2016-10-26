@@ -2,7 +2,7 @@ var fs = require("fs");
 const readline = require('readline');
 var fileName = "../resources/csv/Indicators.csv";
 
-var dataArr = [], csvObjArr = [], jsonObjArr = [];
+var dataArr = [], csvObjArr = [], jsonObjArr = [], code = new Set();
 function CSVObj(countryName, countryCode, indicatorName, indicatorCode, year, values) {
   this.countryName = countryName;
   this.countryCode = countryCode;
@@ -12,10 +12,10 @@ function CSVObj(countryName, countryCode, indicatorName, indicatorCode, year, va
   this.values = values;
 };
 
-function JSONObj(year, indicator, averageValue) {
+function JSONObj(year, birthRate, deathRate) {
   this.year = year;
-  this.indicator = indicator;
-  this.averageValue = averageValue;
+  this.birthRate = birthRate;
+  this.deathRate = deathRate;
 }
 
 var indicatorCode1 = ['SP.DYN.CBRT.IN', 'SP.DYN.CDRT.IN'];
@@ -26,16 +26,18 @@ const rl = readline.createInterface({
   terminal: false
 });
 
-function findAverage(sum, count) {
-    average = sum/count;
+function findAverage(sumB, countB, sumD, countD) {
+    averageB = sumB/countB;
+    averageD = sumD/countD;
     //console.log(average+'::'+sum+'::'+count);
 }
-function createJSONObject(yer, indicator, average) {
-    var obj = new JSONObj(year, indicator, average);
+function createJSONObject(year) {
+    var obj = new JSONObj(year, averageB, averageD);
     jsonObjArr.push(obj);
+    code.add(year);
 }
 
-var counter = 0, count, sum, average = 0, indicator = '', year = '';
+var counter = 0, countB, countD, sumB, sumD, averageB, averageD, year;
 rl.on('line', function(line) {
   if(counter === 0){
     dataArr = line;
@@ -57,20 +59,30 @@ rl.on('close', function() {
 
   for(var y=0; y < indicatorCode1.length; y++){
     for(var x=1960; x < 2015; x++) {
-      count = 0;
-      sum = 0;
+      countB = 0;
+      countD = 0;
+      sumB = 0;
+      sumD = 0;
+      averageB = 0;
+      averageD = 0;
       for(var z=0; z < csvObjArr.length; z++) {
-        if((csvObjArr[z].year == x) && (csvObjArr[z].indicatorCode === indicatorCode1[y])) {
-          count++;
-          sum = sum + Number.parseInt(csvObjArr[z].values);
-          year = csvObjArr[z].year;
+        if((csvObjArr[z].year == x) && !(code.has(csvObjArr[z].year))) {
+          if(csvObjArr[z].indicatorCode === 'SP.DYN.CBRT.IN') {
+            countB++;
+            sumB = sumD + Number.parseInt(csvObjArr[z].values);
+            year = csvObjArr[z].year;
+          }else if (csvObjArr[z].indicatorCode === 'SP.DYN.CDRT.IN') {
+            countD++;
+            sumD = sumD + Number.parseInt(csvObjArr[z].values);
+            year = csvObjArr[z].year;
+          }
         }
       }
-      if((sum !== 0 && sum !== undefined) && (count !== 0 && count !== undefined)){
-        findAverage(sum, count);
+      if((sumB !== 0 && sumB !== undefined) && (countB !== 0 && countB !== undefined) && (sumD !== 0 && sumD !== undefined) && (countD !== 0 && countD !== undefined)){
+        findAverage(sumB, countB, sumD, countD);
       }
-      if((year !== null && year !== undefined) && (indicatorCode1[y] !== null && indicatorCode1[y] !== undefined) && (average !== 0 && average !== undefined) && (sum !== 0 && sum !== undefined) && (count !== 0 && count !== undefined)) {
-        createJSONObject(year, indicatorCode1[y], average);
+      if((year !== null && year !== undefined) && (averageD !== 0 && averageD !== undefined) && (averageB !== 0 && averageB !== undefined)) {
+        createJSONObject(year);
       }
     }
 

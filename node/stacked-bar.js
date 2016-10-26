@@ -57,7 +57,6 @@ function createJSONObject(countryName) {
     jsonObjArr.push(obj);
 }
 rl.on('close', function() {
-  var headers = dataArr.split(',');
 
     for(var x=0; x < asianCountryCode.length; x++) {
       counterF = 0;
