@@ -7,10 +7,13 @@
   stroke: steelblue;
   stroke-width: 2px;
 }
-
+h4 {
+  color: steelblue;
+  font-style: italic;
+}
 </style>
 <body>
-
+<h4>Multi-series line chart of India over the years supplied (1960 - 2015)</h4>
 <!-- load the d3.js library -->
 <script src="../libs/d3.min.js"></script>
 <script>
@@ -19,9 +22,6 @@
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
-
-// parse the date / time
-//var parseTime = d3.timeParse("%d-%b-%y");
 
 // set the ranges
 var x = d3.scaleTime().range([0, width]);
@@ -88,4 +88,6 @@ d3.json("../resources/json/multi-line.json", function(error, data) {
 });
 
 </script>
+<a href="stacked-chart.html">Next</a>
 </body>
+</html>
